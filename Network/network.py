@@ -70,8 +70,8 @@ class Backbone2D(nn.Module):
 class Dummy(nn.Module):
     def __init__(self, input_size, output_size):
         super().__init__()
-        self.linear1 = nn.Linear(input_size, 256)
-        self.linear2 = nn.Linear(256, output_size)
+        self.linear1 = nn.Linear(input_size, 512)
+        self.linear2 = nn.Linear(512, output_size)
         self.activation = nn.ReLU()
 
     def forward(self, x):

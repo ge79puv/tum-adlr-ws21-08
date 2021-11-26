@@ -152,8 +152,8 @@ def oc_check(x_spheres, oc, verbose=1):
         for i in range(np.size(feasible)):
             if not feasible[i] or verbose > 2:
                 oc_info = f"Sphere {d_idx[i]}"
-                print('Minimal Obstacle Distance:  ({})={:.4}m  -> Feasible: {}'.format(
-                    oc_info, d[i], feasible[i]))
+                # print('Minimal Obstacle Distance:  ({})={:.4}m  -> Feasible: {}'.format(
+                #     oc_info, d[i], feasible[i]))
 
     return feasible
 
