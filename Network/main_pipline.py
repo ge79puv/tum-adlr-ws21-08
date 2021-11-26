@@ -36,9 +36,6 @@ img = create_rectangle_image(n=n_obstacles, size_limits=min_max_obstacle_size_vo
 initialize_oc(oc=par.oc, world=par.world, robot=par.robot, obstacle_img=img)
 
 
-# plt.imshow(img)
-# plt.show()
-
 # ====================== Sample start and end points ========================
 def sample_points(number, dof, image, limits):
     def sample(invalid):
@@ -75,7 +72,9 @@ print("Model's state_dict:")
 for param_tensor in model.state_dict():
     print(param_tensor, "\t", model.state_dict()[param_tensor].size())
 
-optimizer = torch.optim.SGD(model.parameters(), lr=0.0005, momentum=0.9)
+# TODO: model initialisation
+# TODO: choose optimizer and corresponding hyperparameters
+optimizer = torch.optim.SGD(model.parameters(), lr=0.0007, momentum=0.9)  # TODO: adaptive learning rate
 # optimizer = torch.optim.Adam(model.parameters())
 # Print optimizer's state_dict
 print("Optimizer's state_dict:")
@@ -99,10 +98,13 @@ for epoch in range(101):
     if epoch % 10 == 0:
         print(epoch, "train loss: ", train_loss_history[-1], "feasible rate: ", train_feasible_history[-1])
 
-    temp = (50 * q * torch.flatten(collision_jac) + q * torch.flatten(length_jac)).sum()
+    # TODO: perform weighting
+    temp = (10 * q * torch.flatten(collision_jac) + q * torch.flatten(length_jac)).sum()
     optimizer.zero_grad()
     temp.backward()
     optimizer.step()
+
+    # TODO: early stop
 
 print('FINISH.')
 # torch.save(model.state_dict(), "./model")
