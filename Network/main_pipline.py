@@ -10,7 +10,7 @@ from Network.network import Backbone2D, Dummy
 from Optimizer.obstacle_collision import oc_check2
 from parameter import Parameter, initialize_oc
 
-np.random.seed(2)
+np.random.seed(3)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(device)
 
@@ -24,6 +24,8 @@ n_voxels = (64, 64)
 
 par = Parameter(robot=robot, obstacle_img='rectangle')
 par.robot.limits = world_limits
+par.oc.n_substeps = 5
+par.oc.n_substeps_check = 5
 n_waypoints = 20
 Dof = 2
 start_end_number_train = 100
@@ -74,7 +76,7 @@ for param_tensor in model.state_dict():
 
 # TODO: model initialisation
 # TODO: choose optimizer and corresponding hyperparameters
-optimizer = torch.optim.SGD(model.parameters(), lr=0.0007, momentum=0.9)  # TODO: adaptive learning rate
+optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)  # TODO: adaptive learning rate
 # optimizer = torch.optim.Adam(model.parameters())
 # Print optimizer's state_dict
 print("Optimizer's state_dict:")
@@ -84,7 +86,7 @@ for var_name in optimizer.state_dict():
 # =============================== Training ====================================
 train_loss_history = []  # loss
 train_feasible_history = []
-for epoch in range(101):
+for epoch in range(501):
 
     q = model(start_end_points)
 
@@ -95,11 +97,11 @@ for epoch in range(101):
 
     train_loss_history.append(length_cost.sum() + collision_cost.sum())
     train_feasible_history.append(oc_check2(q_full.detach().numpy(), par.robot, par.oc).sum() / start_end_number_train)
-    if epoch % 10 == 0:
+    if epoch % 50 == 0:
         print(epoch, "train loss: ", train_loss_history[-1], "feasible rate: ", train_feasible_history[-1])
 
     # TODO: perform weighting
-    temp = (10 * q * torch.flatten(collision_jac) + q * torch.flatten(length_jac)).sum()
+    temp = (5 * q * torch.flatten(collision_jac) + q * torch.flatten(length_jac)).sum()
     optimizer.zero_grad()
     temp.backward()
     optimizer.step()
@@ -116,8 +118,12 @@ q_full = torch.cat((start_points[:, None, :],
                     model(start_end_points).reshape(start_end_number_train, n_waypoints - 2, Dof),
                     end_points[:, None, :]),
                    1)
+i = 0
 for q in q_full.detach().numpy():
     plotting.plot_x_path(x=q, r=par.robot.spheres_rad, ax=ax, marker='o', alpha=0.5)
+    i = i+1
+    if i == 10:
+        break
 plt.show()
 
 # =========================== validation =================================
@@ -134,6 +140,10 @@ print("test loss: ", length_cost.sum() + collision_cost.sum(),
 
 fig, ax = plotting.new_world_fig(limits=par.world.limits, title='Dummy')
 plotting.plot_img_patch_w_outlines(img=par.oc.img, limits=par.world.limits, ax=ax)
+i = 0
 for q in q_full.detach().numpy():
     plotting.plot_x_path(x=q, r=par.robot.spheres_rad, ax=ax, marker='o', alpha=0.5)
+    i = i + 1
+    if i == 10:
+        break
 plt.show()
