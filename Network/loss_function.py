@@ -9,3 +9,4 @@ def chompy_partial_loss(q, par):
     collision_jac = torch.from_numpy(collision_jac)
     return length_cost, collision_cost, length_jac, collision_jac
 
+

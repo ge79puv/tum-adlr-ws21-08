@@ -1,16 +1,19 @@
 import numpy as np
 import torch
+from torch.utils.data import DataLoader
 from matplotlib import pyplot as plt
 
-import plotting
 from GridWorld import create_rectangle_image
 from Kinematic.Robots import SingleSphere02
+from Network.points_dataset import StartEndPointsDataset
+from Network.helper import Processing
 from Network.loss_function import chompy_partial_loss
 from Network.network import Backbone2D, Dummy
+from Network.visualization import plot_paths
 from Optimizer.obstacle_collision import oc_check2
 from parameter import Parameter, initialize_oc
 
-np.random.seed(3)
+np.random.seed(2)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(device)
 
@@ -26,124 +29,145 @@ par = Parameter(robot=robot, obstacle_img='rectangle')
 par.robot.limits = world_limits
 par.oc.n_substeps = 5
 par.oc.n_substeps_check = 5
-n_waypoints = 20
-Dof = 2
-start_end_number_train = 100
-start_end_number_test = 100
+n_waypoints = 15
+Dof = par.robot.n_dof
 
-n_obstacles = 5
+n_obstacles = 0
 min_max_obstacle_size_voxel = [3, 15]
 
 img = create_rectangle_image(n=n_obstacles, size_limits=min_max_obstacle_size_voxel, n_voxels=n_voxels)
 initialize_oc(oc=par.oc, world=par.world, robot=par.robot, obstacle_img=img)
 
-
-# ====================== Sample start and end points ========================
-def sample_points(number, dof, image, limits):
-    def sample(invalid):
-        q_attempt = np.random.rand(invalid, dof)
-        q_attempt_voxel = (q_attempt * image.shape).astype(int)
-        mask = image[q_attempt_voxel[:, 0], q_attempt_voxel[:, 1]]
-        if mask.sum() > 0:
-            new = sample(mask.sum())
-            q_attempt[mask] = new
-        else:
-            return q_attempt
-        return q_attempt
-
-    q_0 = sample(number)
-    q_sampled = limits[:, 0] + q_0 * limits[:, 1]
-    return torch.FloatTensor(q_sampled)
-
-
-start_points = sample_points(start_end_number_train, Dof, img, world_limits)
-end_points = sample_points(start_end_number_train, Dof, img, world_limits)
-start_end_points = torch.flatten(torch.cat((start_points, end_points), 1))  # (start_end_number * 2 * dof)
+# =============================== Dataset ===========================
+proc = Processing(world_limits)
+start_end_number_train = 500
+start_end_number_test = 100
+train_batch_size = 50
+test_batch_size = 50
+training_data = StartEndPointsDataset(start_end_number_train, Dof, img, world_limits, proc)
+train_dataloader = DataLoader(training_data, batch_size=train_batch_size, shuffle=True)
+test_data = StartEndPointsDataset(start_end_number_train, Dof, img, world_limits, proc)
+test_dataloader = DataLoader(test_data, batch_size=test_batch_size, shuffle=True)
 
 # ========================== Neural Network ================================
-# model = Dummy(start_end_number_train * 2 * Dof, start_end_number_train * (n_waypoints - 2) * Dof)
-model = Backbone2D(start_end_number_train * 2 * Dof, start_end_number_train * (n_waypoints - 2) * Dof)
+# model = Dummy(2 * Dof, (n_waypoints - 2) * Dof)
+model = Backbone2D(2 * Dof, (n_waypoints - 2) * Dof)
 model.to(device)
-# print("Model: ")
-# print(model)
-# for parameter in model.parameters():
-#     print(parameter.shape)
-#     print(parameter.data)
-# Print model's state_dict
 print("Model's state_dict:")
 for param_tensor in model.state_dict():
     print(param_tensor, "\t", model.state_dict()[param_tensor].size())
 
-# TODO: model initialisation
+# ================================ Optimizer ================================
 # TODO: choose optimizer and corresponding hyperparameters
-optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)  # TODO: adaptive learning rate
+optimizer = torch.optim.SGD(model.parameters(), lr=0.0001, momentum=0.9)  # TODO: adaptive learning rate
 # optimizer = torch.optim.Adam(model.parameters())
-# Print optimizer's state_dict
 print("Optimizer's state_dict:")
 for var_name in optimizer.state_dict():
     print(var_name, "\t", optimizer.state_dict()[var_name])
 
 # =============================== Training ====================================
-train_loss_history = []  # loss
+# first use only length jac, after change_epoch use both length and collision jac with later_weight
+weight = 0
+change_epoch = 101
+later_weight = 2
+change, repeat = False, 0
+min_test_loss = np.inf
+
+early_change, early_stop = 5, 100
+train_loss_history = []
 train_feasible_history = []
-for epoch in range(501):
+test_loss_history = []
+test_feasible_history = []
 
-    q = model(start_end_points)
+print("Use only length jac")
+for epoch in range(5001):
 
-    q_reshaped = q.reshape(start_end_number_train, n_waypoints - 2, Dof)
-    q_full = torch.cat((start_points[:, None, :], q_reshaped, end_points[:, None, :]), 1)
+    if epoch % 100 == 0:
+        print("epoch: ", epoch)
+    if epoch == change_epoch:
+        print("epoch: ", epoch, "use both length and collision jac...")
+        weight = later_weight
 
-    length_cost, collision_cost, length_jac, collision_jac = chompy_partial_loss(q_full.detach().numpy(), par)
+    # training
+    model.train()
+    train_loss, train_feasible = 0, 0
+    for batch_idx, (start_points, end_points, pairs) in enumerate(train_dataloader):
+        q = model(pairs)
+        q_reshaped = q.reshape(train_batch_size, n_waypoints - 2, Dof)
+        q_pp = proc.postprocessing(q_reshaped)
+        q_full = torch.cat((start_points[:, None, :], q_pp, end_points[:, None, :]), 1)
 
-    train_loss_history.append(length_cost.sum() + collision_cost.sum())
-    train_feasible_history.append(oc_check2(q_full.detach().numpy(), par.robot, par.oc).sum() / start_end_number_train)
-    if epoch % 50 == 0:
-        print(epoch, "train loss: ", train_loss_history[-1], "feasible rate: ", train_feasible_history[-1])
+        length_cost, collision_cost, length_jac, collision_jac = chompy_partial_loss(q_full.detach().numpy(), par)
+        temp = (weight * torch.flatten(q) * torch.flatten(collision_jac)
+                + torch.flatten(q) * torch.flatten(length_jac)).sum() / train_batch_size
+        optimizer.zero_grad()
+        temp.backward()
+        optimizer.step()
 
-    # TODO: perform weighting
-    temp = (5 * q * torch.flatten(collision_jac) + q * torch.flatten(length_jac)).sum()
-    optimizer.zero_grad()
-    temp.backward()
-    optimizer.step()
+        loss = (length_cost.sum() + later_weight * collision_cost.sum()) / train_batch_size
+        train_loss += loss
+        feasible = oc_check2(q_full.detach().numpy(), par.robot, par.oc).sum() / train_batch_size
+        train_feasible += feasible
 
-    # TODO: early stop
+        if epoch % 100 == 0:
+            print(f"loss: {loss:>7f}  [{(batch_idx + 1) * train_batch_size:>5d}/{start_end_number_train:>5d}]")
+
+    if epoch % 100 == 0:
+        plot_paths(q_full, par, number=50)
+        plt.show()
+
+    train_loss_history.append(train_loss / len(train_dataloader))
+    train_feasible_history.append(train_feasible / len(train_dataloader))
+
+    # test
+    # model.eval() # TODO
+    # test_loss, test_feasible = 0, 0
+    # with torch.no_grad():
+    #     for _, (start_points, end_points, pairs) in enumerate(train_dataloader):
+    #         q = model(pairs)
+    #         q_reshaped = q.reshape(train_batch_size, n_waypoints - 2, Dof)
+    #         q_pp = proc.postprocessing(q_reshaped)
+    #         q_full = torch.cat((start_points[:, None, :], q_pp, end_points[:, None, :]), 1)
+    #
+    #         length_cost, collision_cost, length_jac, collision_jac = chompy_partial_loss(q_full.detach().numpy(), par)
+    #         test_loss += (length_cost.sum() + later_weight * collision_cost.sum()) / test_batch_size
+    #         test_feasible += oc_check2(q_full.detach().numpy(), par.robot, par.oc).sum() / test_batch_size
+    #
+    #     if epoch % 20 == 0:
+    #         plot_paths(q_full, par, number=10)
+    #         plt.show()
+    #
+    #     test_loss /= len(test_dataloader)
+    #     test_feasible /= len(test_dataloader)
+    #
+    #     if test_loss < min_test_loss:
+    #         min_test_loss = test_loss
+    #         repeat = 0
+    #     else:
+    #         repeat += 1
+    #         if repeat >= early_change and epoch >= change_epoch and change is False:
+    #             print("epoch: ", epoch, "use both length and collision jac...")
+    #             weight = later_weight
+    #             min_test_loss = np.inf
+    #             repeat = 0
+    #             change = True
+    #         elif repeat >= early_stop and change is True:
+    #             print("epoch: ", epoch, "early stop.")
+    #             break
+    #
+    # test_loss_history.append(test_loss)
+    # test_feasible_history.append(test_feasible)
+    #
+    if epoch % 100 == 0:
+        print("train loss mean: ", train_loss_history[-1], ",  feasible rate: ", train_feasible_history[-1])
+    #     print("test loss: ", test_loss_history[-1], ",  feasible rate: ", test_feasible_history[-1])
+
 
 print('FINISH.')
-# torch.save(model.state_dict(), "./model")
-
-# ============================ visualisation ============================
-fig, ax = plotting.new_world_fig(limits=par.world.limits, title='Dummy')
-plotting.plot_img_patch_w_outlines(img=par.oc.img, limits=par.world.limits, ax=ax)
-q_full = torch.cat((start_points[:, None, :],
-                    model(start_end_points).reshape(start_end_number_train, n_waypoints - 2, Dof),
-                    end_points[:, None, :]),
-                   1)
-i = 0
-for q in q_full.detach().numpy():
-    plotting.plot_x_path(x=q, r=par.robot.spheres_rad, ax=ax, marker='o', alpha=0.5)
-    i = i+1
-    if i == 10:
-        break
-plt.show()
+torch.save(model.state_dict(), "./model")
 
 # =========================== validation =================================
-start_points = sample_points(start_end_number_test, Dof, img, world_limits)
-end_points = sample_points(start_end_number_test, Dof, img, world_limits)
-start_end_points = torch.flatten(torch.cat((start_points, end_points), 1))  # (start_end_number * 2 * dof)
-q_full = torch.cat((start_points[:, None, :],
-                    model(start_end_points).reshape(start_end_number_test, n_waypoints - 2, Dof),
-                    end_points[:, None, :]),
-                   1)
-length_cost, collision_cost, length_jac, collision_jac = chompy_partial_loss(q_full.detach().numpy(), par)
-print("test loss: ", length_cost.sum() + collision_cost.sum(),
-      "feasible rate: ", oc_check2(q_full.detach().numpy(), par.robot, par.oc).sum() / start_end_number_test)
-
-fig, ax = plotting.new_world_fig(limits=par.world.limits, title='Dummy')
-plotting.plot_img_patch_w_outlines(img=par.oc.img, limits=par.world.limits, ax=ax)
-i = 0
-for q in q_full.detach().numpy():
-    plotting.plot_x_path(x=q, r=par.robot.spheres_rad, ax=ax, marker='o', alpha=0.5)
-    i = i + 1
-    if i == 10:
-        break
-plt.show()
+#
+# model = Backbone2D(2 * Dof, (n_waypoints - 2) * Dof)
+# model.load_state_dict(torch.load("./model"))
+# optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
