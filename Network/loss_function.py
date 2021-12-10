@@ -1,4 +1,4 @@
-from Optimizer.chomp import chomp_grad
+from chompy.Optimizer.chomp import chomp_grad
 import torch
 
 

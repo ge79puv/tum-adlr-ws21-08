@@ -1,5 +1,4 @@
 import torch.nn as nn
-import torch.nn.functional as F
 
 
 class Highway(nn.Module):
@@ -10,8 +9,8 @@ class Highway(nn.Module):
         self.nonlinear = nn.ModuleList([nn.Linear(size, size) for _ in range(num_layers)])
         self.linear = nn.ModuleList([nn.Linear(size, size) for _ in range(num_layers)])
         self.gate = nn.ModuleList([nn.Linear(size, size) for _ in range(num_layers)])
+        self.norm = nn.ModuleList([nn.BatchNorm1d(size) for _ in range(num_layers)])
         self.activation = activation
-        self.norm = nn.BatchNorm1d(size)
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
@@ -28,7 +27,7 @@ class Highway(nn.Module):
             nonlinear = self.activation(self.nonlinear[layer](x))
             linear = self.linear[layer](x)
             x = gate * nonlinear + (1 - gate) * linear
-            x = self.norm(x)
+            x = self.norm[layer](x)
         return x
 
 
@@ -42,16 +41,17 @@ class MultiLayerPerceptron(nn.Module):
         self.hidden = None
         if num_layers > 2:
             self.hidden = nn.ModuleList([nn.Linear(hidden_size, hidden_size) for _ in range(num_layers-2)])
+            self.norm_hidden = nn.ModuleList([nn.BatchNorm1d(hidden_size) for _ in range(num_layers-2)])
         self.last = nn.Linear(hidden_size, output_size)
         self.activation = activation
-        self.norm_hidden = nn.BatchNorm1d(hidden_size)
+
         self.norm_output = nn.BatchNorm1d(output_size)
 
     def forward(self, x):
         x = self.activation(self.first(x))
         if self.hidden is not None:
             for layer in range(self.num_layers-2):
-                x = self.norm_hidden(x)
+                x = self.norm_hidden[layer](x)
                 x = self.activation(self.hidden[layer](x))
         x = self.norm_output(self.last(x))
 
@@ -59,13 +59,12 @@ class MultiLayerPerceptron(nn.Module):
 
 
 class Backbone2D(nn.Module):
-    def __init__(self, input_size, output_size, activation=nn.Tanh()):
+    def __init__(self, input_size, output_size, activation=nn.ReLU()):
         super().__init__()
         self.mlp1 = MultiLayerPerceptron((input_size, 128, 256), 2, activation)
         self.highway_layers = Highway(256, 10, activation)
         self.mlp2 = MultiLayerPerceptron((256, 256, 256), 3, activation)
         self.fcn64 = nn.Linear(256, output_size)
-        self.norm = nn.BatchNorm1d(output_size)
         self.tanh = nn.Tanh()
 
     def forward(self, x):
@@ -73,12 +72,8 @@ class Backbone2D(nn.Module):
         x = self.highway_layers(x)
         x = self.mlp2(x)
         x = self.fcn64(x)
-        x = self.norm(x)
         x = self.tanh(x)
         return x
-
-    def train(self):
-        pass
 
 
 class Dummy(nn.Module):
@@ -89,8 +84,10 @@ class Dummy(nn.Module):
         self.activation = nn.ReLU()
         self.norm1 = nn.BatchNorm1d(256)
         self.norm2 = nn.BatchNorm1d(output_size)
+        self.tanh = nn.Tanh()
 
     def forward(self, x):
         x = self.activation(self.linear1(x))
         x = self.norm2(self.linear2(self.norm1(x)))
+        x = self.tanh(x)
         return x
