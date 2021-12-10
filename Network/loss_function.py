@@ -1,4 +1,4 @@
-from Optimizer.chomp import chomp_grad
+from chompy.Optimizer.chomp import chomp_grad
 import torch
 
 
@@ -8,4 +8,5 @@ def chompy_partial_loss(q, par):
     length_jac = torch.from_numpy(length_jac)
     collision_jac = torch.from_numpy(collision_jac)
     return length_cost, collision_cost, length_jac, collision_jac
+
 
