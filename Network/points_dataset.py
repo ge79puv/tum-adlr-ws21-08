@@ -6,10 +6,10 @@ from Optimizer import feasibility_check
 
 
 class StartEndPointsDataset(Dataset):
-    def __init__(self, number, image, par, proc):
+    def __init__(self, number, par, proc):
         self.number = number
-        self.start_points = sample_points(number, image, par)  # (number, dof)
-        self.end_points = sample_points(number, image, par)   # (number, dof)
+        self.start_points = sample_points(number, par)  # (number, dof)
+        self.end_points = sample_points(number, par)   # (number, dof)
         self.pairs = torch.cat((proc.preprocessing(self.start_points),
                                 proc.preprocessing(self.end_points)),
                                1)  # (number, 2 * dof)
@@ -27,7 +27,7 @@ class StartEndPointsDataset(Dataset):
         self.pairs = torch.cat((self.pairs, SEDataset.pairs), 0)
 
 
-def sample_points(number, image, par):
+def sample_points(number, par):
     def sample(invalid):
         q_attempt = np.random.rand(invalid, par.robot.n_dof) * (par.robot.limits[:, 1] - par.robot.limits[:, 0])
         status = feasibility_check(q_attempt[:, np.newaxis, :], par)
