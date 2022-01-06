@@ -46,13 +46,11 @@ class MultiLayerPerceptron(nn.Module):
         self.last = nn.Linear(hidden_size, output_size)
         self.activation = activation
         self.norm = nn.BatchNorm1d(hidden_size)
-        self.dropout = nn.Dropout()
 
     def forward(self, x):
         x = self.first(x)
         x = self.norm(x)
         x = self.activation(x)
-        # x = self.dropout(x)
         if self.hidden is not None:
             for layer in range(self.num_layers-2):
                 x = self.hidden[layer](x)

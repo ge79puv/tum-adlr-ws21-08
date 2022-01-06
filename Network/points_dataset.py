@@ -6,25 +6,21 @@ from Optimizer import feasibility_check
 
 
 class StartEndPointsDataset(Dataset):
-    def __init__(self, number, par, proc):
+    def __init__(self, number, par):
         self.number = number
         self.start_points = sample_points(number, par)  # (number, dof)
         self.end_points = sample_points(number, par)   # (number, dof)
-        self.pairs = torch.cat((proc.preprocessing(self.start_points),
-                                proc.preprocessing(self.end_points)),
-                               1)  # (number, 2 * dof)
 
     def __len__(self):
         return self.number
 
     def __getitem__(self, item):
-        return self.start_points[item], self.end_points[item], self.pairs[item]
+        return self.start_points[item], self.end_points[item]
 
     def add_data(self, SEDataset):
         self.number = self.number + SEDataset.number
         self.start_points = torch.cat((self.start_points, SEDataset.start_points), 0)
         self.end_points = torch.cat((self.end_points, SEDataset.end_points), 0)
-        self.pairs = torch.cat((self.pairs, SEDataset.pairs), 0)
 
 
 def sample_points(number, par):
