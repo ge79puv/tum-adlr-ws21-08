@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d4ff749a-e310-4e17-8a64-bf4912b6cb92" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../chompy-main/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitmodules" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/tum-adlr-ws21-08-main.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Network/1.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Network/NURBS.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Network/helper.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Network/loss_function.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Network/main_pipline1.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Network/model" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Network/myTensor1.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Network/myTensor2.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Network/myTensor3.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Network/network.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Network/new_spline1.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Network/points_dataset.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Network/visualization.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/GridWorld/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/GridWorld/obstacle_distance.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/GridWorld/random_obstacles.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/GridWorld/templates.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/GridWorld/world2grid.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/Kinematic/Robots/MovingArm.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/Kinematic/Robots/Robot.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/Kinematic/Robots/SingleSphere.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/Kinematic/Robots/StaticArm.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/Kinematic/Robots/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/Kinematic/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/Kinematic/chain.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/Kinematic/forward.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/Kinematic/frames.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/Kinematic/sample_configurations.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/Optimizer/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/Optimizer/chomp.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/Optimizer/choose_optimum.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/Optimizer/feasibility_check.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/Optimizer/gradient_descent.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/Optimizer/initial_guess.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/Optimizer/length.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/Optimizer/obstacle_collision.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/Optimizer/path.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/main_edt.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/main_feasible.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/main_gradients.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/main_image.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/main_initial_guess.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/main_omp.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/main_robot.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/main_sample_start_end.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/parameter.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/plotting.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/upr.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/dicts_lists_tuples.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/files.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/image.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/math2.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/mpl/DraggablePatches.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/mpl/Patches2.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/mpl/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/mpl/axes.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/mpl/bool_image_boundaries.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/mpl/colors.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/mpl/figure.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/mpl/geometry.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/mpl/legend.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/mpl/move_figure.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/mpl/plotting.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/mpl/styles.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/mpl/threed.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/mpl/ticks.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/multiprocessing2.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/numpy2.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chompy/wzk/perlin.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/main_pipline.py" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/main_pipline.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/model" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/model" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/network.py" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/network.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_0.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_0.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_10.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_10.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_15.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_15.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_20.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_20.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_25.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_25.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_30.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_30.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_35.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_35.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_40.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_40.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_45.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_45.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_5.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_5.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_50.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_50.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_55.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_55.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_60.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_60.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_70.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_epoch_70.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_0.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_0.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_10.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_10.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_15.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_15.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_20.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_20.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_25.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_25.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_30.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_30.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_35.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_35.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_40.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_40.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_45.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_45.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_5.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_5.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_50.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_50.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_55.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_55.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_60.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_60.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_70.png" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-main/Network/plot/o10/BothJacAfter30C5/record_train_epoch_70.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tum-adlr-ws21-08-temp2/tum-adlr-ws21-08-temp/main_pipline.py" beforeDir="false" afterPath="$PROJECT_DIR$/../tum-adlr-ws21-08-temp2/tum-adlr-ws21-08-temp/main_pipline.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="226Gjn5jOpHQv6hIpjXifw1j8Bk" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../image" />
+  </component>
+  <component name="RunManager" selected="Python.main_pipeline_image1">
+    <configuration name="main_pipeline_image" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="tum-adlr-ws21-08-main" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Network" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Network/main_pipeline_image.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main_pipeline_image1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="tum-adlr-ws21-08-main" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Network" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Network/main_pipeline_image1.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main_pipeline_image2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="tum-adlr-ws21-08-main" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Network" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Network/main_pipeline_image2.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main_pipline1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="tum-adlr-ws21-08-main" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Network" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Network/main_pipline1.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="new_spline2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="tum-adlr-ws21-08-main" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Network" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Network/new_spline2.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.main_pipeline_image1" />
+        <item itemvalue="Python.main_pipeline_image2" />
+        <item itemvalue="Python.main_pipeline_image" />
+        <item itemvalue="Python.main_pipline1" />
+        <item itemvalue="Python.new_spline2" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d4ff749a-e310-4e17-8a64-bf4912b6cb92" name="Changes" comment="" />
+      <created>1639150763145</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1639150763145</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/chompy/wzk/perlin.py</url>
+          <line>2</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
