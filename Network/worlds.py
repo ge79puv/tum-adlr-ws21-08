@@ -13,7 +13,6 @@ from chompy import plotting
 
 
 class Worlds:
-    dataloader: Dict[Any, Any]
 
     def __init__(self, n_worlds, n_obs, min_max_obstacle_size_voxel, n_voxels, par):
 
