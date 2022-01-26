@@ -36,8 +36,8 @@ n_control_points = 1
 degree = 3
 Dof = par.robot.n_dof
 
-save_image = False
-plot_path = './plot/images/test/'
+save_image = True
+plot_path = './plot/images/W20P500Lr5/'
 os.makedirs(plot_path, exist_ok=True)
 
 # ============================ Worlds and Points =============================
@@ -47,7 +47,7 @@ min_max_obstacle_size_voxel = [3, 15]
 n_voxels = (64, 64)
 
 n_worlds_train = 10
-start_end_number_train = 500  # in every world
+start_end_number_train = 300  # in every world
 train_batch_size = 50
 worlds_train = Worlds(n_worlds_train, n_obstacles, min_max_obstacle_size_voxel, n_voxels, par)
 worlds_train.points_loader(start_end_number_train, train_batch_size, shuffle=True)
@@ -73,7 +73,7 @@ for var_name in optimizer.state_dict():
     print(var_name, "\t", optimizer.state_dict()[var_name])
 
 # =============================== Training ====================================
-weight = np.array([1, 5])
+weight = np.array([1, 3])
 repeat = 0
 min_test_loss = np.inf
 
@@ -90,38 +90,57 @@ for epoch in range(501):
     # training
     model.train()
     train_loss, train_feasible = 0, 0
-    worlds = np.random.permutation(range(worlds_train.n_worlds))
-    for i in worlds:
-        for _, (start_points_train, end_points_train) in enumerate(worlds_train.dataloader[str(i)]):
-            pairs_train = torch.cat((proc.preprocessing(start_points_train), proc.preprocessing(end_points_train)),
-                                    1)  # (number, 2 * dof)
-            control_points, control_point_weights = model(worlds_train.images, pairs_train)
-            q_p = torch.cat((start_points_train[:, None, :],
-                             proc.postprocessing(control_points),
-                             end_points_train[:, None, :]), 1)
 
-            nurbs = NURBS(p=q_p, degree=degree, w=control_point_weights, u=u)
-            q = nurbs.evaluate()
-            q_full = torch.cat((start_points_train[:, None, :], q, end_points_train[:, None, :]), 1)
-            length_cost, collision_cost, length_jac, collision_jac = \
-                chompy_partial_loss(q_full.detach().numpy(), worlds_train.pars[str(i)])
+    for _ in range(10):
 
-            do_dq = weight[0] * length_cost.mean() * length_jac / np.sqrt(length_cost[:, None, None]) + weight[
-                1] * collision_jac
-            dq_dp = nurbs.evaluate_jac()
-            do_dp = torch.matmul(torch.moveaxis(dq_dp, 1, 2), do_dq.float())
+        start_points_train = torch.tensor([])
+        end_points_train = torch.tensor([])
+        pairs_train = torch.tensor([])
+        for i in range(n_worlds_train):
+            start_points, end_points = next(iter(worlds_train.dataloader[str(i)]))
+            start_points_train = torch.cat((start_points_train, start_points), 0)
+            end_points_train = torch.cat((end_points_train, end_points), 0)
+            pairs = torch.cat((proc.preprocessing(start_points), proc.preprocessing(end_points)), 1)
+            pairs_train = torch.cat((pairs_train, pairs), 0)
 
-            train_loss += (weight[0] * length_cost + weight[1] * collision_cost).mean()
-            train_feasible += oc_check2(q_full.detach().numpy(), worlds_train.pars[str(i)].robot,
+        control_points, control_point_weights = model(worlds_train.images, pairs_train)
+        q_p = torch.cat((start_points_train[:, None, :],
+                         proc.postprocessing(control_points),
+                         end_points_train[:, None, :]), 1)
+
+        nurbs = NURBS(p=q_p, degree=degree, w=control_point_weights, u=u)
+        q = nurbs.evaluate()
+        q_full = torch.cat((start_points_train[:, None, :], q, end_points_train[:, None, :]), 1)
+
+        length_cost, collision_cost = torch.tensor([]), torch.tensor([])
+        length_jac, collision_jac = torch.tensor([]), torch.tensor([])
+        for i in range(n_worlds_train):
+            lc, cc, lj, cj = chompy_partial_loss(
+                q_full[i * train_batch_size:(i + 1) * train_batch_size].detach().numpy(),
+                worlds_train.pars[str(i)])
+            length_cost = np.concatenate((length_cost, lc), 0)
+            collision_cost = np.concatenate((collision_cost, cc), 0)
+            length_jac = torch.cat((length_jac, lj), 0)
+            collision_jac = torch.cat((collision_jac, cj), 0)
+
+            train_feasible += oc_check2(q_full[i * train_batch_size:(i + 1) * train_batch_size].detach().numpy(),
+                                        worlds_train.pars[str(i)].robot,
                                         worlds_train.pars[str(i)].oc, verbose=0).mean()
 
-            temp = (do_dp[:, 1:-1, :] * control_points).mean()
-            optimizer.zero_grad()
-            temp.backward()
-            optimizer.step()
+        do_dq = weight[0] * length_cost.mean() * length_jac / np.sqrt(length_cost[:, None, None]) + weight[
+            1] * collision_jac
+        dq_dp = nurbs.evaluate_jac()
+        do_dp = torch.matmul(torch.moveaxis(dq_dp, 1, 2), do_dq.float())
 
-    train_loss_history.append(train_loss / len(worlds_train.dataloader[str(0)]) / worlds_train.n_worlds)
-    train_feasible_history.append(train_feasible / len(worlds_train.dataloader[str(0)]) / worlds_train.n_worlds)
+        train_loss += (weight[0] * length_cost + weight[1] * collision_cost).mean()
+
+        temp = (do_dp[:, 1:-1, :] * control_points).mean()
+        optimizer.zero_grad()
+        temp.backward()
+        optimizer.step()
+
+    train_loss_history.append(train_loss / 10)
+    train_feasible_history.append(train_feasible / 10 / worlds_train.n_worlds)
 
     # test
     model.eval()

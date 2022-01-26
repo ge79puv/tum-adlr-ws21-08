@@ -143,11 +143,11 @@ class CNNUnit(nn.Module):
 
         self.first = nn.Sequential(
             nn.Conv2d(input_channel, output_channel, (kernel_size, kernel_size), padding=(1, 1)),
-            # nn.BatchNorm2d(output_channel),
+            nn.BatchNorm2d(output_channel),
         )
         self.hidden = nn.ModuleList([nn.Sequential(
             nn.Conv2d(output_channel, output_channel, (kernel_size, kernel_size), padding=(1, 1)),
-            # nn.BatchNorm2d(output_channel),
+            nn.BatchNorm2d(output_channel),
         ) for _ in range(num_layers - 1)])
 
     def forward(self, x):
@@ -164,7 +164,7 @@ class CNNWorlds(nn.Module):
         super().__init__()
         # batch * 1 * 64 * 64
         self.input_size = np.int(world_voxel[0] * world_voxel[1] / 4)
-        self.cnn1 = CNNUnit((1, 4), num_layers=3, kernel_size=3, activation=activation)
+        self.cnn1 = CNNUnit((1, 4), num_layers=5, kernel_size=3, activation=activation)
         self.pooling1 = nn.MaxPool2d(4)
         self.cnn2 = CNNUnit((4, 16), num_layers=3, kernel_size=3, activation=activation)
         self.pooling2 = nn.MaxPool2d(2)
@@ -192,7 +192,7 @@ class PlanFromImage(nn.Module):
         self.activation = activation
         self.ctrlpts = ctrlpts
         if self.ctrlpts:
-            self.wp = PredictControlPoints((512, 64, dof + 1), 3, n_points, activation)
+            self.wp = PredictControlPoints((512, 64, dof + 1), 5, n_points, activation)
         else:
             self.mlp3 = MultiLayerPerceptron((512, 256, n_points*dof), 3, activation)
 
@@ -214,21 +214,3 @@ class PlanFromImage(nn.Module):
         else:
             result = self.mlp3(x)
         return result
-
-
-# radius = 0.3  # Size of the robot [m]
-# robot = SingleSphere02(radius=radius)
-# par = Parameter(robot=robot, obstacle_img='rectangle')
-# Dof = par.robot.n_dof
-# world_limits = np.array([[0, 10],  # x [m]
-#                          [0, 10]])  # y [m]
-# proc = Processing(world_limits)
-# par.robot.limits = world_limits
-# n_obstacles = 5
-# min_max_obstacle_size_voxel = [3, 15]
-# n_voxels = (64, 64)
-# img = create_rectangle_image(n=n_obstacles, size_limits=min_max_obstacle_size_voxel, n_voxels=n_voxels)
-# initialize_oc(oc=par.oc, world=par.world, robot=par.robot, obstacle_img=img)
-#
-# model = CNNWorlds(n_voxels)
-# x = model(torch.from_numpy(img[None, None, :, :]).float())

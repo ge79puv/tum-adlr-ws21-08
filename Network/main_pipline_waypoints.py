@@ -35,7 +35,7 @@ n_waypoints = 10
 Dof = par.robot.n_dof
 
 save_image = True
-plot_path = './plot/waypoints/test/'
+plot_path = './plot/waypoints/global_C20/'
 os.makedirs(plot_path, exist_ok=True)
 
 # ============================ Worlds =============================
@@ -76,7 +76,7 @@ for var_name in optimizer.state_dict():
     print(var_name, "\t", optimizer.state_dict()[var_name])
 
 # =============================== Training ====================================
-weight = np.array([1, 3])
+weight = np.array([1, 20])
 repeat = 0
 min_test_loss = np.inf
 
@@ -87,7 +87,7 @@ test_loss_history = []
 test_feasible_history = []
 
 print("Use both length jac and collision jac...")
-for epoch in range(201):
+for epoch in range(501):
 
     # training
     model.train()
@@ -96,11 +96,21 @@ for epoch in range(201):
         pairs_train = torch.cat((proc.preprocessing(start_points_train), proc.preprocessing(end_points_train)),
                                 1)  # (number, 2 * dof)
         q = model(pairs_train).reshape(train_batch_size, n_waypoints, Dof)
+
+        # Path representation 1 : global coordinates in configuration space
         q_full = torch.cat((start_points_train[:, None, :],
-                            # proc.postprocessing(q) + start_points_train[:, None, :],
-                            # TODO failed: predict relative pos to the previous waypoint
-                            proc.postprocessing(proc.preprocessing(start_points_train[:, None, :]) + q.cumsum(axis=1)),
+                            proc.postprocessing(q),  # predict waypoints
+                            #  Path representation 3: predict relative pos to the previous waypoint
+                            # proc.postprocessing(proc.preprocessing(start_points_train[:, None, :]) + q.cumsum(axis=1)),
                             end_points_train[:, None, :]), 1)
+
+        #  Path representation 2: relative coordinates to the connecting straight line
+        # straight_line_points = torch.moveaxis(
+        #     (torch.from_numpy(np.linspace(proc.preprocessing(start_points_train),
+        #                                   proc.preprocessing(end_points_train), n_waypoints + 2))), 0, 1)[:, 1:-1, :]
+        # q_full = torch.cat((start_points_train[:, None, :],
+        #                     proc.postprocessing(straight_line_points + q),
+        #                     end_points_train[:, None, :]), 1)
 
         length_cost, collision_cost, length_jac, collision_jac = chompy_partial_loss(q_full.detach().numpy(), par)
 
@@ -124,9 +134,16 @@ for epoch in range(201):
                                   proc.preprocessing(record_data_train.end_points)), 1)
         q = model(pairs_record).reshape(start_end_number_record, n_waypoints, Dof)
         q_full = torch.cat((record_data_train.start_points[:, None, :],
-                            # proc.postprocessing(q) + record_data_train.start_points[:, None, :],
-                            proc.postprocessing(proc.preprocessing(record_data_train.start_points[:, None, :]) + q.cumsum(axis=1)),
+                            proc.postprocessing(q),
+                            # proc.postprocessing(proc.preprocessing(record_data_train.start_points[:, None, :]) + q.cumsum(axis=1)),
                             record_data_train.end_points[:, None, :]), 1)
+
+        # straight_line_points = torch.moveaxis(
+        #     (torch.from_numpy(np.linspace(proc.preprocessing(record_data_train.start_points),
+        #                                   proc.preprocessing(record_data_train.end_points), n_waypoints + 2))), 0, 1)[:, 1:-1, :]
+        # q_full = torch.cat((record_data_train.start_points[:, None, :],
+        #                     proc.postprocessing(straight_line_points + q),
+        #                     record_data_train.end_points[:, None, :]), 1)
 
         if epoch % 5 == 0:
             name = 'record_train_epoch_' + str(epoch)
@@ -138,10 +155,17 @@ for epoch in range(201):
                                    1)  # (number, 2 * dof)
             q = model(pairs_test).reshape(train_batch_size, n_waypoints, Dof)
             q_full = torch.cat((start_points_test[:, None, :],
-                                # proc.postprocessing(q) + start_points_test[:, None, :],
-                                proc.postprocessing(
-                                    proc.preprocessing(start_points_test[:, None, :]) + q.cumsum(axis=1)),
+                                proc.postprocessing(q),
+                                # proc.postprocessing(
+                                #     proc.preprocessing(start_points_test[:, None, :]) + q.cumsum(axis=1)),
                                 end_points_test[:, None, :]), 1)
+
+            # straight_line_points = torch.moveaxis(
+            #     (torch.from_numpy(np.linspace(proc.preprocessing(start_points_test),
+            #                                   proc.preprocessing(end_points_test), n_waypoints + 2))), 0, 1)[:, 1:-1, :]
+            # q_full = torch.cat((start_points_test[:, None, :],
+            #                     proc.postprocessing(straight_line_points + q),
+            #                     end_points_test[:, None, :]), 1)
 
             length_cost, collision_cost, length_jac, collision_jac = chompy_partial_loss(q_full.detach().numpy(), par)
 
@@ -156,7 +180,7 @@ for epoch in range(201):
         if test_loss < min_test_loss:
             min_test_loss = test_loss
             repeat = 0
-        else:
+        elif epoch > 200:
             repeat += 1
             if repeat >= early_stop:
                 print("epoch: ", epoch, "early stop.")
@@ -171,8 +195,10 @@ for epoch in range(201):
 
 # =========================== Save the results ========================
 print('FINISH.')
-torch.save(model.state_dict(), "model_waypoints")
-# np.save("test_feasible_L1C5", test_feasible_history)
+# torch.save(model.state_dict(), "model_")
+
+np.savez("global_C20", train_loss_history=train_loss_history, train_feasible_history=train_feasible_history,
+         test_loss_history=test_loss_history, test_feasible_history=test_feasible_history)
 
 plt.show()
 

@@ -29,15 +29,17 @@ world_limits = np.array([[0, 10],  # x [m]
                          [0, 10]])  # y [m]
 proc = Processing(world_limits)
 par.robot.limits = world_limits
+par.oc.n_substeps = 5
+par.oc.n_substeps_check = 5
 
-n_waypoints = 50
+n_waypoints = 10
 u = np.linspace(0.01, 0.99, n_waypoints)
 n_control_points = 1
 degree = 3
 Dof = par.robot.n_dof
 
 save_image = True
-plot_path = './plot/nurbs/N1D3_C1/'
+plot_path = './plot/nurbs/N1D3_C20/'
 os.makedirs(plot_path, exist_ok=True)
 
 # ============================ Worlds =============================
@@ -78,18 +80,18 @@ for var_name in optimizer.state_dict():
     print(var_name, "\t", optimizer.state_dict()[var_name])
 
 # =============================== Training ====================================
-weight = np.array([1, 1])
+weight = np.array([1, 20])
 repeat = 0
 min_test_loss = np.inf
 
-early_stop = 20
+early_stop = 10
 train_loss_history = []
 train_feasible_history = []
 test_loss_history = []
 test_feasible_history = []
 
 print("Use both length jac and collision jac...")
-for epoch in range(101):
+for epoch in range(501):
 
     # training
     model.train()
@@ -169,7 +171,7 @@ for epoch in range(101):
         if test_loss < min_test_loss:
             min_test_loss = test_loss
             repeat = 0
-        else:
+        elif epoch > 200:
             repeat += 1
             if repeat >= early_stop:
                 print("epoch: ", epoch, "early stop.")
@@ -184,8 +186,10 @@ for epoch in range(101):
 
 # =========================== Save the results ========================
 print('FINISH.')
-torch.save(model.state_dict(), "model")
-np.save("test_feasible_nurbs_N1D3_C1.npy", test_feasible_history)
+# torch.save(model.state_dict(), "model")
+
+np.savez("N1D3_C20", train_loss_history=train_loss_history, train_feasible_history=train_feasible_history,
+         test_loss_history=test_loss_history, test_feasible_history=test_feasible_history)
 
 plt.show()
 

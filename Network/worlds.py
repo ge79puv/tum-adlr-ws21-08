@@ -1,6 +1,7 @@
 from typing import Dict, Any
 import copy
 
+from GridWorld import obstacle_img2dist_img
 from Network.points_dataset import StartEndPointsDataset
 from chompy.GridWorld import create_rectangle_image, create_perlin_image
 from chompy.parameter import initialize_oc
@@ -17,6 +18,7 @@ class Worlds:
     def __init__(self, n_worlds, n_obs, min_max_obstacle_size_voxel, n_voxels, par):
 
         self.images = None
+        self.dist_images = None
         self.pars = {}
         self.dataset = {}
         self.dataloader = {}
@@ -37,11 +39,16 @@ class Worlds:
             initialize_oc(oc=par.oc, world=par.world, robot=par.robot, obstacle_img=img)
             self.pars[str(i)] = par
 
+            dist_img = torch.from_numpy(
+                obstacle_img2dist_img(img=img, voxel_size=self.n_voxels)[np.newaxis, np.newaxis, :]).float()
             img = torch.from_numpy(img[np.newaxis, np.newaxis, :]).float()  # torch.Size([1, 1, 64, 64])
+
             if i == 0:
                 self.images = img
-            if i > 0:
+                self.dist_images = dist_img
+            elif i > 0:
                 self.images = torch.cat((self.images, img), 0)
+                self.dist_images = torch.cat((self.dist_images, dist_img), 0)
 
     def points_loader(self, n_pairs, batch_size, shuffle=True):
         for i in range(self.n_worlds):
@@ -49,7 +56,7 @@ class Worlds:
             self.dataset[str(i)] = StartEndPointsDataset(n_pairs, par)
             fig, ax = plotting.new_world_fig(limits=par.world.limits)
             plotting.plot_img_patch_w_outlines(img=par.oc.img, limits=par.world.limits, ax=ax)
-            plt.show()
+            # plt.show()
 
             self.dataloader[str(i)] = DataLoader(self.dataset[str(i)], batch_size, shuffle)
 
