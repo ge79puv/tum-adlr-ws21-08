@@ -93,6 +93,7 @@ for epoch in range(201):
     model.train()
     train_loss, train_feasible = 0, 0
     for _, (start_points_train, end_points_train) in enumerate(train_dataloader):
+        # torch.Size([50, 2])
         pairs_train = torch.cat((proc.preprocessing(start_points_train), proc.preprocessing(end_points_train)),
                                 1)  # (number, 2 * dof)
         q = model(pairs_train).reshape(train_batch_size, n_waypoints, Dof)

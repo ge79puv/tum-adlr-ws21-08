@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from chompy.GridWorld.random_obstacles import create_rectangle_image, create_perlin_image
+from GridWorld.random_obstacles import create_rectangle_image, create_perlin_image
 
 
 # Block World

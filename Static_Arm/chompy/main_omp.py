@@ -1,10 +1,10 @@
 import numpy as np
 
-from chompy.Kinematic.Robots import SingleSphere02
-from chompy.Optimizer import path, choose_optimum, initial_guess, gradient_descent, chomp, obstacle_collision
+from Kinematic.Robots import SingleSphere02
+from Optimizer import path, choose_optimum, initial_guess, gradient_descent, chomp, obstacle_collision
 
-import chompy.plotting
-from chompy.parameter import Parameter, GradientDescent
+import plotting
+from parameter import Parameter, GradientDescent
 
 # Sample Program for showing the Optimizer Based Motion Planning (OMP) as described by CHOMP
 # Most of the parameters

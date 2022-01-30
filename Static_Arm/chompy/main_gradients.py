@@ -1,8 +1,8 @@
 import numpy as np
-from chompy.Kinematic.Robots import StaticArm
-from chompy.GridWorld import create_perlin_image
-from chompy.Optimizer.chomp import chomp_cost, chomp_grad
-from chompy.parameter import Parameter, initialize_oc
+from Kinematic.Robots import StaticArm
+from GridWorld import create_perlin_image
+from Optimizer.chomp import chomp_cost, chomp_grad
+from parameter import Parameter, initialize_oc
 
 
 robot = StaticArm(n_dof=5, limb_lengths=0.4, radius=0.1)

@@ -2,9 +2,9 @@ import numpy as np
 from matplotlib.widgets import Slider
 from matplotlib.animation import FuncAnimation
 
-from chompy.GridWorld.random_obstacles import create_rectangle_image
-from chompy.GridWorld.obstacle_distance import obstacle_img2dist_img, obstacle_img2dist_grad
-from chompy.wzk.mpl import DraggableCircleList, new_fig, imshow, imshow_update, plt, get_xaligned_axes
+from GridWorld.random_obstacles import create_rectangle_image
+from GridWorld.obstacle_distance import obstacle_img2dist_img, obstacle_img2dist_grad
+from wzk.mpl import DraggableCircleList, new_fig, imshow, imshow_update, plt, get_xaligned_axes
 
 
 # A simple animation, to get to know the concept of Signed Distance Field (SDF)/Euclidean Distance Transformation (EDT)
@@ -30,7 +30,7 @@ class SDF:
         self.h_distance = imshow(ax=self.ax, img=distance_image, cmap='Blues', limits=self.limits)
         self.h_obstacle = imshow(ax=self.ax, img=obstacle_image, cmap='Reds', limits=self.limits,
                                  mask=obstacle_image == 0, alpha=0.3)
-
+        plt.show()
         plt.pause(0.01)
         self.slider = Slider(get_xaligned_axes(ax=self.ax, y_distance=0.1, height=0.03),
                              'N Obstacles', valmin=1, valmax=50, valinit=25, valstep=1, valfmt='%d')

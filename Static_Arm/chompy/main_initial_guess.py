@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from chompy.Kinematic.Robots import SingleSphere02
-from chompy.Optimizer import initial_guess
+from Kinematic.Robots import SingleSphere02
+from Optimizer import initial_guess
 
 radius = 0.3  # Size of the robot [m]
 robot = SingleSphere02(radius=radius)

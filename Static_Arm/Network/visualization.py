@@ -22,15 +22,18 @@ def plot_spheres(q_full, par, number, name, robot, path=None, save=False):
         '''
         fig, ax = plotting.new_world_fig(limits=par.world.limits, title=name)
         plotting.plot_img_patch_w_outlines(img=par.oc.img, limits=par.world.limits, ax=ax)
-        plotting.plot_spheres(q=q[0], robot=robot, ax=ax)  # start
+        plotting.plot_spheres(q=q[0], robot=robot, ax=ax, color='r')  # start
         plotting.plot_spheres(q=q[q.shape[0] - 1], robot=robot, ax=ax)  # end
-        # plt.show()
+        plt.show()
         '''
         fig, ax = plotting.new_world_fig(limits=par.world.limits, title=name)
         plotting.plot_img_patch_w_outlines(img=par.oc.img, limits=par.world.limits, ax=ax)
 
         for i in range(q.shape[0]):
-            plotting.plot_spheres(q=q[i], robot=robot, ax=ax)  # 将这个path中的所有waypoint状态在一张图上都print出来
+            if i == 0 or i == q.shape[0]-1:
+                plotting.plot_spheres(q=q[i], robot=robot, ax=ax, color='red')
+            plotting.plot_spheres(q=q[i], robot=robot, ax=ax)
+
         if save:
             plt.savefig(path + (name + "_path_" + str(j)) )
         j = j + 1

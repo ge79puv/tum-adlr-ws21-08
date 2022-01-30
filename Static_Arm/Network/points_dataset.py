@@ -3,6 +3,7 @@ import torch
 from torch.utils.data import Dataset
 
 from chompy.Optimizer import feasibility_check
+from helper import joints_preprocessing
 
 
 class StartEndPointsDataset(Dataset):
@@ -44,9 +45,8 @@ def sample_points(number, par):
 class BasePointsDataset(Dataset):
     def __init__(self, number, par):
         self.number = number
-        self.start_points = sample_points_arm(number, par)[:, 0, :]  # (number, dof)
-        self.end_points = sample_points_arm(number, par)[:, 1, :]   # (number, dof)
-        self.par = par
+        self.start_points = joints_preprocessing(sample_points_arm(number, par)[:number, :])  # (number, dof)
+        self.end_points = joints_preprocessing(sample_points_arm(number, par)[number:, :])  # (number, dof)
 
     def __len__(self):
         return self.number
@@ -64,8 +64,8 @@ def sample_points_arm(number, par):
 
     def sample(invalid):
 
-        q = par.robot.sample_q((invalid, 2))  # will not repeat, different number different value  (number,2,dof)
-        status = feasibility_check(q, par)  # (number, ) [-1,1]
+        q = par.robot.sample_q(invalid)  # will not repeat, different number different value  (number,dof)
+        status = feasibility_check(q[:, np.newaxis, :], par)  # (number, ) [-1,1]   (number,1,dof)
         # print(q[status == -1].shape[0])
         if q[status == -1].shape[0] > 0:
             new = sample(q[status == -1].shape[0])
@@ -74,17 +74,6 @@ def sample_points_arm(number, par):
             return q
         return q
 
-    q_sampled = sample(number)  # (number,2,dof)
+    q_sampled = sample(2*number)  # (2*number,dof)
     return torch.FloatTensor(q_sampled)
 
-
-'''
-x = par.robot.get_x_spheres(q)  # (number, 2, number_sphere, 2)
-# print(x.shape)
-
-# Todo 验证x的位置有没有和obstacles重合的
-x = np.reshape(x, (-1, 2))  # (number * 2 * number_sphere, 2)
-# print(x[:, np.newaxis, :].shape)
-status = feasibility_check(x[:, np.newaxis, :], par)  # (number * 2 * number_sphere, ) [-1,1]
-q[np.any(status == -1, axis=1)]
-'''

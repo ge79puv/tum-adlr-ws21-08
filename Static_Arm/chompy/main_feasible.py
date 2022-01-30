@@ -1,9 +1,9 @@
 import numpy as np
 
-from chompy.Kinematic.Robots import SingleSphere02
-from chompy.Optimizer import feasibility_check, path
-import chompy.plotting
-from chompy.parameter import Parameter
+from Kinematic.Robots import SingleSphere02
+from Optimizer import feasibility_check, path
+import plotting
+from parameter import Parameter
 
 np.random.seed(2)
 

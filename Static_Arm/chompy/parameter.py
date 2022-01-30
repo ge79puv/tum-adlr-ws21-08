@@ -259,22 +259,20 @@ def initialize_oc(oc, world, robot,
         obstacle_img = templates.create_template(n_voxels=world.n_voxels, world=obstacle_img)
 
     try:
-        a = oc.active_spheres   # [ True]
+        _ = oc.active_spheres
     except AttributeError:
-        oc.active_spheres = np.ones(len(robot.spheres_rad), dtype=bool)   # [ True]
+        oc.active_spheres = np.ones(len(robot.spheres_rad), dtype=bool)
 
-    oc.spheres_rad = robot.spheres_rad  # [0.3]
-    oc.img = obstacle_img   # 核心，将生成的长方形的障碍物地图赋值给par.oc.img，这才是robot要在其中运动的地图
-    # active_spheres, spheres_rad, dist_fun, dist_grad在这里才被定义，赋值
+    oc.spheres_rad = robot.spheres_rad
+    oc.img = obstacle_img
+
     oc.dist_fun, oc.dist_grad = \
-        obstacle_distance\
-            .obstacle_img2funs(img=obstacle_img, add_boundary=True,
-                               dist_img=dist_img, dist_img_grad=dist_img_grad,
-                               voxel_size=world.voxel_size, lower_left=world.limits[:, 0],
-                               interp_order_dist=oc.edt_interp_order_cost,
-                               interp_order_grad=oc.edt_interp_order_grad)  # 使得collision_cost和collision_jac可以被计算
-    # oc.dist_fun <function img2interpolation_fun.<locals>.interp_fun at 0x000001B970FDB700>
-    # oc.dist_grad <function img_grad2interpolation_fun.<locals>.fun_grad at 0x000001B970FDB8B0>
+        obstacle_distance.obstacle_img2funs(img=obstacle_img, add_boundary=True,
+                                            dist_img=dist_img, dist_img_grad=dist_img_grad,
+                                            voxel_size=world.voxel_size, lower_left=world.limits[:, 0],
+                                            interp_order_dist=oc.edt_interp_order_cost,
+                                            interp_order_grad=oc.edt_interp_order_grad)
+
     return obstacle_img
 
 

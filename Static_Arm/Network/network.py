@@ -169,7 +169,7 @@ class PlanFromArmState(nn.Module):
     def __init__(self, input_size, n_points, dof, activation=nn.ReLU()):
         super().__init__()
         # self.worldsNet = CNNWorlds(world_voxel=(64,64), activation=nn.ReLU())
-        self.mlp1 = MultiLayerPerceptron((input_size, 128, 256), 2, activation)
+        self.mlp1 = MultiLayerPerceptron((input_size, 128, 256), 2, activation)  # 6
         self.norm1 = nn.BatchNorm1d(256)
         self.highway_layers = Highway(256, 10, activation)
         self.mlp2 = MultiLayerPerceptron((256, 256, 256), 3, activation)
@@ -177,8 +177,9 @@ class PlanFromArmState(nn.Module):
         self.activation = activation
         self.fcn64 = nn.Linear(256, n_points*dof)  # 512
         self.tanh = nn.Tanh()
+        # self.norm3 = nn.BatchNorm1d(n_points*dof)
 
-    def forward(self, worlds, x):
+    def forward(self, x):
         # x1 = self.worldsNet(worlds)
         x = self.mlp1(x)
         x = self.norm1(x)
@@ -192,6 +193,7 @@ class PlanFromArmState(nn.Module):
 
         x = self.fcn64(x)
         x = self.tanh(x)
+        # x = self.norm3(x)
         return x
 
 

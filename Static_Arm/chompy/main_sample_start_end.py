@@ -1,9 +1,9 @@
 import numpy as np
 
-from chompy.Kinematic.Robots import SingleSphere02
-from chompy.Optimizer import feasibility_check
-from chompy.parameter import Parameter
-import chompy.plotting
+from Kinematic.Robots import SingleSphere02
+from Optimizer import feasibility_check
+from parameter import Parameter
+import plotting
 
 radius = 0.3  # Size of the robot [m]
 robot = SingleSphere02(radius=radius)

@@ -1,6 +1,6 @@
 import numpy as np
 
-from chompy.Kinematic.Robots import SingleSphere02, StaticArm
+from Kinematic.Robots import SingleSphere02, StaticArm
 
 
 radius = 0.3
