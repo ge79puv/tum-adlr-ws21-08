@@ -6,7 +6,7 @@ from Network.points_dataset import StartEndPointsDataset
 from chompy.GridWorld import create_rectangle_image, create_perlin_image
 from chompy.parameter import initialize_oc
 import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -16,12 +16,11 @@ from chompy import plotting
 class Worlds:
 
     def __init__(self, n_worlds, n_obs, min_max_obstacle_size_voxel, n_voxels, par):
-
         self.images = None
         self.dist_images = None
         self.pars = {}
-        self.dataset = {}
-        self.dataloader = {}
+        self.points_dataset = {}
+        self.points_loader = {}
 
         self.n_worlds = n_worlds
         self.n_obs = n_obs
@@ -33,14 +32,14 @@ class Worlds:
 
     def create_worlds(self):
         for i in range(self.n_worlds):
-            n_obstacles = np.random.randint(self.n_obs[0], self.n_obs[1])
-            img = create_rectangle_image(n=n_obstacles, size_limits=self.min_max_obstacle_size_voxel, n_voxels=self.n_voxels)
+            img = create_rectangle_image(
+                n=self.n_obs, size_limits=self.min_max_obstacle_size_voxel, n_voxels=self.n_voxels)
             par = copy.deepcopy(self.par_origin)
             initialize_oc(oc=par.oc, world=par.world, robot=par.robot, obstacle_img=img)
             self.pars[str(i)] = par
 
-            dist_img = torch.from_numpy(
-                obstacle_img2dist_img(img=img, voxel_size=self.n_voxels)[np.newaxis, np.newaxis, :]).float()
+            dist_img = torch.from_numpy(obstacle_img2dist_img(
+                img=img, voxel_size=[1/self.n_voxels[0], 1/self.n_voxels[1]])[np.newaxis, np.newaxis, :]).float()
             img = torch.from_numpy(img[np.newaxis, np.newaxis, :]).float()  # torch.Size([1, 1, 64, 64])
 
             if i == 0:
@@ -49,14 +48,29 @@ class Worlds:
             elif i > 0:
                 self.images = torch.cat((self.images, img), 0)
                 self.dist_images = torch.cat((self.dist_images, dist_img), 0)
+        self.images = ImagesDataset(self.n_worlds, self.images)
+        self.dist_images = ImagesDataset(self.n_worlds, self.dist_images)
 
-    def points_loader(self, n_pairs, batch_size, shuffle=True):
+    def create_points_loader(self, n_pairs, batch_size, shuffle=True):
         for i in range(self.n_worlds):
             par = self.pars[str(i)]
-            self.dataset[str(i)] = StartEndPointsDataset(n_pairs, par)
-            fig, ax = plotting.new_world_fig(limits=par.world.limits)
-            plotting.plot_img_patch_w_outlines(img=par.oc.img, limits=par.world.limits, ax=ax)
+            self.points_dataset[str(i)] = StartEndPointsDataset(n_pairs, par)
+            # fig, ax = plotting.new_world_fig(limits=par.world.limits)
+            # plotting.plot_img_patch_w_outlines(img=par.oc.img, limits=par.world.limits, ax=ax)
             # plt.show()
 
-            self.dataloader[str(i)] = DataLoader(self.dataset[str(i)], batch_size, shuffle)
+            self.points_loader[str(i)] = DataLoader(self.points_dataset[str(i)], batch_size, shuffle)
+
+
+class ImagesDataset(Dataset):
+    def __init__(self, number, images):
+        self.number = number
+        self.images = images
+
+    def __len__(self):
+        return self.number
+
+    def __getitem__(self, item):
+        return self.images[item], item
+
 

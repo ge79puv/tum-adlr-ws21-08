@@ -5,7 +5,7 @@ import torch
 from torch.utils.data import DataLoader
 from matplotlib import pyplot as plt
 
-from Network.NURBS import NURBS
+from Network.nurbs import NURBS
 from chompy.GridWorld import create_rectangle_image
 from chompy.Kinematic.Robots import SingleSphere02
 from points_dataset import StartEndPointsDataset
@@ -33,12 +33,12 @@ par.oc.n_substeps = 5
 par.oc.n_substeps_check = 5
 
 n_waypoints = 10
-u = np.linspace(0.01, 0.99, n_waypoints)
+u = np.linspace(0.1, 0.9, n_waypoints)
 n_control_points = 1
 degree = 3
 Dof = par.robot.n_dof
 
-save_image = True
+save_image = False
 plot_path = './plot/nurbs/N1D3_C20/'
 os.makedirs(plot_path, exist_ok=True)
 
@@ -80,7 +80,7 @@ for var_name in optimizer.state_dict():
     print(var_name, "\t", optimizer.state_dict()[var_name])
 
 # =============================== Training ====================================
-weight = np.array([1, 20])
+weight = np.array([1, 5])
 repeat = 0
 min_test_loss = np.inf
 
@@ -129,7 +129,6 @@ for epoch in range(501):
     model.eval()
     test_loss, test_feasible = 0, 0
     with torch.no_grad():
-
         if epoch % 5 == 0:
             pairs_record = torch.cat((proc.preprocessing(record_data_train.start_points),
                                       proc.preprocessing(record_data_train.end_points)), 1)
@@ -188,8 +187,9 @@ for epoch in range(501):
 print('FINISH.')
 # torch.save(model.state_dict(), "model")
 
-np.savez("N1D3_C20", train_loss_history=train_loss_history, train_feasible_history=train_feasible_history,
-         test_loss_history=test_loss_history, test_feasible_history=test_feasible_history)
+if save_image:
+    np.savez("N1D3_C20", train_loss_history=train_loss_history, train_feasible_history=train_feasible_history,
+             test_loss_history=test_loss_history, test_feasible_history=test_feasible_history)
 
 plt.show()
 
