@@ -31,7 +31,7 @@ par.robot.limits = world_limits
 par.oc.n_substeps = 5
 par.oc.n_substeps_check = 5
 
-n_waypoints = 10
+n_waypoints = 15
 Dof = par.robot.n_dof
 
 save_image = True
@@ -47,7 +47,7 @@ initialize_oc(oc=par.oc, world=par.world, robot=par.robot, obstacle_img=img)
 
 # =============================== Points Dataset ===========================
 start_end_number_train = 2000
-start_end_number_test = 100
+start_end_number_test = 500
 start_end_number_record = 10
 
 train_batch_size = 50
@@ -56,8 +56,12 @@ test_batch_size = 50
 training_data = StartEndPointsDataset(start_end_number_train - start_end_number_record, par)
 record_data_train = StartEndPointsDataset(start_end_number_record, par)
 training_data.add_data(record_data_train)
+training_data.set_collision_rate(0.6)
+# training_data.set_min_distance(2)
 train_dataloader = DataLoader(training_data, batch_size=train_batch_size, shuffle=True)
 test_data = StartEndPointsDataset(start_end_number_test, par)
+test_data.set_collision_rate(0.6)
+# test_data.set_min_distance(2)
 test_dataloader = DataLoader(test_data, batch_size=test_batch_size, shuffle=False)
 
 # ========================== Neural Network ================================
@@ -149,7 +153,7 @@ for epoch in range(501):
             #                     record_data_train.end_points[:, None, :]), 1)
 
             name = 'record_train_epoch_' + str(epoch)
-            plot_paths(q_full, par, 5, name, plot_path, save=save_image)
+            plot_paths(q_full, par, 10, name, plot_path, save=save_image)
             plt.show()
 
         for _, (start_points_test, end_points_test) in enumerate(test_dataloader):

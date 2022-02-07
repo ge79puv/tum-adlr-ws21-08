@@ -2,8 +2,8 @@ import torch
 
 
 def scaling(x, input_limits, output_limits):
-    input_center = (input_limits[:, 1] - input_limits[:, 0]) / 2 + input_limits[:, 0]
-    output_center = (output_limits[:, 1] - output_limits[:, 0]) / 2 + output_limits[:, 0]
+    input_center = ((input_limits[:, 1] - input_limits[:, 0]) / 2 + input_limits[:, 0])[None, :]
+    output_center = ((output_limits[:, 1] - output_limits[:, 0]) / 2 + output_limits[:, 0])[None, :]
 
     factor = (output_limits[:, 1] - output_center) / (input_limits[:, 1] - input_center)
     x_scaled = (x - input_center) * factor + output_center

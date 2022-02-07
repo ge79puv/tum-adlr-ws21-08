@@ -31,7 +31,7 @@ par.robot.limits = world_limits
 par.oc.n_substeps = 5
 par.oc.n_substeps_check = 5
 
-n_waypoints = 20
+n_waypoints = 10
 u = np.linspace(0.01, 0.99, n_waypoints)
 n_control_points = 1
 degree = 3
@@ -46,17 +46,17 @@ n_obstacles = 5
 min_max_obstacle_size_voxel = [3, 15]
 n_voxels = (64, 64)
 
-n_worlds_train = 100
-start_end_number_train = 2000   # in every world
-worlds_batch_train = 10
+n_worlds_train = 50
+start_end_number_train = 500   # in every world
+worlds_batch_train = 5
 points_batch_train = 20
 worlds_train = Worlds(n_worlds_train, n_obstacles, min_max_obstacle_size_voxel, n_voxels, par)
 worlds_train.create_points_loader(start_end_number_train, points_batch_train, shuffle=True)
 worlds_loader_train = DataLoader(worlds_train.dist_images, batch_size=worlds_batch_train, shuffle=True)
 
-n_worlds_test = 10
+n_worlds_test = 20
 start_end_number_test = 100
-worlds_batch_test = 10
+worlds_batch_test = 5
 points_batch_test = 20
 worlds_test = Worlds(n_worlds_test, n_obstacles, min_max_obstacle_size_voxel, n_voxels, par)
 worlds_test.create_points_loader(start_end_number_test, points_batch_test, shuffle=False)
@@ -215,7 +215,7 @@ for epoch in range(501):
 
                 test_loss += (weight[0] * length_cost + weight[1] * collision_cost).mean()
 
-        if epoch % 20 == 0:
+        if epoch % 10 == 0:
             check = 0
             name = 'test_epoch_' + str(epoch)
             plot_paths(q_full[check * points_batch_test:(check + 1) * points_batch_test],

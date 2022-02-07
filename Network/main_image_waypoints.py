@@ -34,7 +34,7 @@ n_waypoints = 10
 Dof = par.robot.n_dof
 
 save_image = True
-plot_path = './plot/images/test/'
+plot_path = './plot/images/test2/'
 os.makedirs(plot_path, exist_ok=True)
 
 # ============================ Worlds and Points =============================
@@ -42,20 +42,20 @@ n_obstacles = 5
 min_max_obstacle_size_voxel = [3, 15]
 n_voxels = (64, 64)
 
-n_worlds_train = 200
-start_end_number_train = 2000   # in every world
+n_worlds_train = 100
+start_end_number_train = 1000   # in every world
 worlds_batch_train = 10
-points_batch_train = 20
+points_batch_train = 10
 worlds_train = Worlds(n_worlds_train, n_obstacles, min_max_obstacle_size_voxel, n_voxels, par)
-worlds_train.create_points_loader(start_end_number_train, points_batch_train, shuffle=True)
+worlds_train.create_points_loader(start_end_number_train, points_batch_train, collision_rate=0.6, shuffle=True)
 worlds_loader_train = DataLoader(worlds_train.dist_images, batch_size=worlds_batch_train, shuffle=True)
 
-n_worlds_test = 10
+n_worlds_test = 30
 start_end_number_test = 100
-worlds_batch_test = 10
+worlds_batch_test = 5
 points_batch_test = 20
 worlds_test = Worlds(n_worlds_test, n_obstacles, min_max_obstacle_size_voxel, n_voxels, par)
-worlds_test.create_points_loader(start_end_number_test, points_batch_test, shuffle=False)
+worlds_test.create_points_loader(start_end_number_test, points_batch_test, collision_rate=0.6, shuffle=False)
 worlds_loader_test = DataLoader(worlds_test.dist_images, batch_size=worlds_batch_test, shuffle=False)
 
 # ========================== Neural Network ================================
@@ -154,8 +154,8 @@ for epoch in range(501):
     test_loss, test_feasible = 0, 0
     with torch.no_grad():
 
-        if epoch % 10 == 0:
-            check = 0   # np.random.randint(0, worlds_train.n_worlds)
+        if epoch % 1 == 0:
+            check = 1   # np.random.randint(0, worlds_train.n_worlds)
             pairs_record = torch.cat((proc.preprocessing(worlds_train.points_dataset[str(check)].start_points),
                                       proc.preprocessing(worlds_train.points_dataset[str(check)].end_points)), 1)
             q = model(worlds_train.dist_images[check][0][None, ...], pairs_record).reshape(start_end_number_train, n_waypoints, Dof)
@@ -214,8 +214,8 @@ for epoch in range(501):
 
                 test_loss += (weight[0] * length_cost + weight[1] * collision_cost).mean()
 
-        if epoch % 20 == 0:
-            check = 0
+        if epoch % 1 == 0:
+            check = 1
             name = 'test_epoch_' + str(epoch)
             plot_paths(q_full[check * points_batch_test:(check + 1) * points_batch_test],
                        worlds_test.pars[str(idx[check])], 10, name, plot_path, save=save_image)

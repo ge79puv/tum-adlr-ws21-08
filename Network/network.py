@@ -16,12 +16,13 @@ class PlanFromState(nn.Module):
         if self.ctrlpts:
             self.wp = PredictControlPoints((256, 64, dof + 1), 3, n_points, activation)
         else:
-            self.mlp3 = MultiLayerPerceptron((256, 256, n_points*dof), 3, activation)
+            self.mlp3 = MultiLayerPerceptron((256, 256, n_points*dof), 2, activation)
 
     def forward(self, x):
         x = self.mlp1(x)
         x = self.norm1(x)
         # x = self.highway_layers(x)
+        x = self.activation(x)
         x = self.mlp2(x)
         x = self.norm2(x)
         x = self.activation(x)
@@ -40,16 +41,18 @@ class PlanFromImage(nn.Module):
         self.encoder = torch.nn.Sequential(
             nn.MaxPool2d(2),
             nn.Flatten(),
-            MultiLayerPerceptron((32*32, 512, 256), 3, nn.ReLU()),
-            nn.ReLU(),
-            MultiLayerPerceptron((256, 128, 128), 3, nn.ReLU())
+            nn.BatchNorm1d(32*32),
+            MultiLayerPerceptron((32*32, 256, 64), 2, nn.ReLU()),
+            nn.BatchNorm1d(64),
+            # nn.ReLU(),
+            # MultiLayerPerceptron((256, 128, 64), 3, nn.ReLU())
         )
         if encoder:
             self.encoder.load_state_dict(encoder)
 
-        self.mlp1 = MultiLayerPerceptron((input_size, 128, 128), 2, activation)
-        self.norm1 = nn.BatchNorm1d(128)
-        self.highway_layers = Highway(256, 10, activation)
+        self.mlp1 = MultiLayerPerceptron((64+input_size, 128, 256), 2, activation)
+        self.norm1 = nn.BatchNorm1d(256)
+        # self.highway_layers = Highway(128, 10, activation)
         self.mlp2 = MultiLayerPerceptron((256, 256, 256), 3, activation)
         self.norm2 = nn.BatchNorm1d(256)
         self.activation = activation
@@ -58,16 +61,17 @@ class PlanFromImage(nn.Module):
         if self.ctrlpts:
             self.wp = PredictControlPoints((256, 64, dof + 1), 3, n_points, activation)
         else:
-            self.mlp3 = MultiLayerPerceptron((256, 256, n_points*dof), 3, activation)
+            self.mlp3 = MultiLayerPerceptron((256, 256, n_points*dof), 2, activation)
 
     def forward(self, worlds, x):
         x1 = self.encoder(worlds)
-        x1 = x1.repeat(np.int(x.shape[0] / worlds.shape[0]), 1)
-        x2 = self.mlp1(x)
-        x2 = self.norm1(x2)
+        x1 = x1.repeat_interleave(np.int(x.shape[0] / worlds.shape[0]), dim=0)
+        x2 = torch.cat((x1, x), 1)
 
-        x3 = torch.cat((x1, x2), 1)
-        x3 = self.highway_layers(x3)
+        x2 = self.mlp1(x2)
+        x2 = self.norm1(x2)
+        x3 = self.activation(x2)
+        # x3 = self.highway_layers(x3)
         x3 = self.mlp2(x3)
         x3 = self.norm2(x3)
         x3 = self.activation(x3)
@@ -273,16 +277,17 @@ class Autoencoder2(torch.nn.Module):
         self.encoder = torch.nn.Sequential(
             nn.MaxPool2d(2),
             nn.Flatten(),
-            MultiLayerPerceptron((32*32, 256, 64), 3, nn.ReLU()),
+            MultiLayerPerceptron((32*32, 256, 256), 3, nn.ReLU()),
             nn.ReLU(),
-            MultiLayerPerceptron((64, 64, 32), 3, nn.ReLU())
+            MultiLayerPerceptron((256, 256, 128), 3, nn.ReLU())
         )
 
         self.decoder = torch.nn.Sequential(
-            MultiLayerPerceptron((32, 64, 64), 3, nn.ReLU()),
+            MultiLayerPerceptron((128, 256, 256), 3, nn.ReLU()),
             nn.ReLU(),
-            MultiLayerPerceptron((64, 256, 32*32), 3, nn.ReLU()),
+            MultiLayerPerceptron((256, 256, 32*32), 3, nn.ReLU()),
             Reshape(-1, 1, 32, 32),
+            nn.Sigmoid(),
             nn.Upsample(scale_factor=2, mode='bilinear'),
         )
 

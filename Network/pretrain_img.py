@@ -23,12 +23,12 @@ n_voxels = (64, 64)
 n_worlds_train = 1000
 worlds_batch_train = 10
 worlds_train = Worlds(n_worlds_train, n_obstacles, min_max_obstacle_size_voxel, n_voxels, par)
-worlds_loader_train = DataLoader(worlds_train.dist_images, batch_size=worlds_batch_train, shuffle=True)
+worlds_loader_train = DataLoader(worlds_train.images, batch_size=worlds_batch_train, shuffle=True)
 
 n_worlds_test = 10
 worlds_batch_test = 10
 worlds_test = Worlds(n_worlds_test, n_obstacles, min_max_obstacle_size_voxel, n_voxels, par)
-worlds_loader_test = DataLoader(worlds_test.dist_images, batch_size=worlds_batch_test, shuffle=False)
+worlds_loader_test = DataLoader(worlds_test.images, batch_size=worlds_batch_test, shuffle=False)
 
 # ============================== Image Pretrain =============================
 loss_func = torch.nn.MSELoss()
