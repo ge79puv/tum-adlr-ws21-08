@@ -1,0 +1,3 @@
+[submodule "chompy"]
+	path = chompy
+	url = git@github.com:scleronomic/chompy.git
