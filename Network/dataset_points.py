@@ -23,6 +23,11 @@ class StartEndPointsDataset(Dataset):
         self.start_points = torch.cat((self.start_points, SEDataset.start_points), 0)
         self.end_points = torch.cat((self.end_points, SEDataset.end_points), 0)
 
+    def get_collision_rate(self):
+        waypoints = np.linspace(self.start_points, self.end_points, 10).swapaxes(0, 1)
+        status = feasibility_check(waypoints[:, 1:-1, :], self.par)
+        print("collision rate: ", (status == -1).mean())
+
     def set_collision_rate(self, collision_rate):
         waypoints = np.linspace(self.start_points, self.end_points, 10).swapaxes(0, 1)
         status = feasibility_check(waypoints[:, 1:-1, :], self.par)

@@ -9,12 +9,12 @@ class PlanFromState(nn.Module):
         self.mlp1 = MultiLayerPerceptron((input_size, 128, 256), 2, activation)
         self.norm1 = nn.BatchNorm1d(256)
         # self.highway_layers = Highway(256, 10, activation)
-        self.mlp2 = MultiLayerPerceptron((256, 256, 256), 3, activation)
+        self.mlp2 = MultiLayerPerceptron((256, 256, 256), 2, activation)
         self.norm2 = nn.BatchNorm1d(256)
         self.activation = activation
         self.ctrlpts = ctrlpts
         if self.ctrlpts:
-            self.wp = PredictControlPoints((256, 64, dof + 1), 3, n_points, activation)
+            self.wp = PredictControlPoints((256, 128, dof + 1), 2, n_points, activation)
         else:
             self.mlp3 = MultiLayerPerceptron((256, 256, n_points*dof), 2, activation)
 
@@ -35,52 +35,48 @@ class PlanFromState(nn.Module):
 
 
 class PlanFromImage(nn.Module):
-    def __init__(self, world_voxel, input_size, n_points, dof, activation=nn.ReLU(), ctrlpts=False, encoder=None):
+    def __init__(self, input_size, n_points, dof, activation=nn.ReLU(), ctrlpts=False):
         super().__init__()
 
-        self.encoder = torch.nn.Sequential(
+        self.worlds_encoder = nn.Sequential(
             nn.MaxPool2d(2),
             nn.Flatten(),
             nn.BatchNorm1d(32*32),
-            MultiLayerPerceptron((32*32, 256, 64), 2, nn.ReLU()),
-            nn.BatchNorm1d(64),
-            # nn.ReLU(),
-            # MultiLayerPerceptron((256, 128, 64), 3, nn.ReLU())
+            MultiLayerPerceptron((32*32, 512, 256), 2, nn.ReLU()),
+            nn.BatchNorm1d(256),
         )
-        if encoder:
-            self.encoder.load_state_dict(encoder)
-
-        self.mlp1 = MultiLayerPerceptron((64+input_size, 128, 256), 2, activation)
-        self.norm1 = nn.BatchNorm1d(256)
+        self.points_encoder = nn.Sequential(
+            MultiLayerPerceptron((input_size, 32, 32), 2, nn.ReLU()),
+            nn.BatchNorm1d(32),
+        )
+        self.mlp = MultiLayerPerceptron((288, 512, 512), 3, activation)
+        self.norm = nn.BatchNorm1d(512)
         # self.highway_layers = Highway(128, 10, activation)
-        self.mlp2 = MultiLayerPerceptron((256, 256, 256), 3, activation)
-        self.norm2 = nn.BatchNorm1d(256)
         self.activation = activation
 
         self.ctrlpts = ctrlpts
         if self.ctrlpts:
-            self.wp = PredictControlPoints((256, 64, dof + 1), 3, n_points, activation)
+            self.wp = PredictControlPoints((512, 64, dof + 1), 3, n_points, activation)
         else:
-            self.mlp3 = MultiLayerPerceptron((256, 256, n_points*dof), 2, activation)
+            self.mlp3 = MultiLayerPerceptron((512, 256, n_points*dof), 2, activation)
 
-    def forward(self, worlds, x):
-        x1 = self.encoder(worlds)
-        x1 = x1.repeat_interleave(np.int(x.shape[0] / worlds.shape[0]), dim=0)
-        x2 = torch.cat((x1, x), 1)
+    def forward(self, worlds, points):
+        x1 = self.worlds_encoder(worlds)
+        x1 = x1.repeat_interleave(np.int(points.shape[0] / worlds.shape[0]), dim=0)
 
-        x2 = self.mlp1(x2)
-        x2 = self.norm1(x2)
-        x3 = self.activation(x2)
+        x2 = self.points_encoder(points)
+        y = torch.cat((x1, x2), 1)
+
+        y = self.mlp(y)
+        y = self.norm(y)
+        y = self.activation(y)
         # x3 = self.highway_layers(x3)
-        x3 = self.mlp2(x3)
-        x3 = self.norm2(x3)
-        x3 = self.activation(x3)
 
         if self.ctrlpts:
-            ctrlpts, weights = self.wp(x3)
+            ctrlpts, weights = self.wp(y)
             result = (ctrlpts, weights)
         else:
-            result = self.mlp3(x3)
+            result = self.mlp3(y)
         return result
 
 
